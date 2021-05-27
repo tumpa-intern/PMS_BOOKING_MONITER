@@ -14,7 +14,7 @@ public class FailedBookingsScheduler {
 
     private static final Logger log = LoggerFactory.getLogger(FailedBookingsScheduler.class);
 
-    @Scheduled(cron = "0 16 16 * * *", zone = "IST")
+    @Scheduled(cron = "0 51 10 * * *", zone = "IST")
     public void reportCurrentTime() {
 	log.info("Check the email now.... Time of generation is over.");
 	String date = null;
