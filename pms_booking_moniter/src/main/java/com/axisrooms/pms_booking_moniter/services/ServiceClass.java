@@ -38,6 +38,9 @@ public class ServiceClass {
 
     @Autowired
     ChannelOtaRepository otaRepository;
+	
+    @Value("${directory.path}")
+    private String directory;
 
     public void returnAllFailedResults(String date) {
 	if (date == null) {
@@ -48,11 +51,11 @@ public class ServiceClass {
 	List<PmsPushBooking> pmsFailedBookingslist = pushBookingRepository.getAllTheFailedBookingsUsingDate(date);
 	List<String[]> list = createDataSet(pmsFailedBookingslist);
 	String fileName = getFileName(date);
-	String directory = "\\home\\";
+	//String directory = "\\home\\";
 	try {
 	    writeToCsvFile(list, directory, fileName);
 	    try {
-		attachEmail(directory, fileName);
+		attachEmail(directory, fileName, date);
 	    } catch (Exception e) {
 		e.printStackTrace();
 	    }
@@ -108,7 +111,7 @@ public class ServiceClass {
 	printer.flush();
     }
 
-    public String attachEmail(String directory, String fileName) throws Exception {
+    public String attachEmail(String directory, String fileName, String date) throws Exception {
 	API.API_KEY = "f21823e3-bcff-43f5-9aec-8f4a2af2c9cc";
 	Email email = new Email();
 	ApiTypes.EmailSend response;
@@ -121,13 +124,14 @@ public class ServiceClass {
 	fileDataList.add(fileData);
 
 	String emailBody = "Hi,Please find the attachment for failed bookings.";
-	response = email.send("The Failed PMS Bookings", "noreply@axisrooms.com", "Failed Bookings for Todays Date", "",
-		"", "", "", "", "", toSend, null, null, null, null, null, "", "", emailBody, "", "", "", "",
+	response = email.send("The Failed PMS Bookings", "noreply@axisrooms.com", "Failed Bookings on " + date, "", "",
+		"", "", "", "", toSend, null, null, null, null, null, "", "", emailBody, "", "", "", "",
 		ApiTypes.EncodingType.BASE64, "", fileDataList, null, "", null, "", "", false);
 
 	if (response != null)
 	    return "Email successfully sent";
 	return "Email isn't sent";
     }
+
 
 }
